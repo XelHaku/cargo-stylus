@@ -28,6 +28,7 @@ mod deploy;
 mod docker;
 mod export_abi;
 mod gen;
+mod happy_new_year;
 mod hostio;
 mod macros;
 mod new;
@@ -97,6 +98,9 @@ enum Apis {
     /// Trace a transaction.
     #[command(visible_alias = "t")]
     Trace(TraceArgs),
+    /// A happy new year!
+    #[command(visible_alias = "ny")]
+    HappyNewYear(HappyNewYearArgs),
 }
 
 #[derive(Args, Clone, Debug)]
@@ -264,6 +268,25 @@ struct TraceArgs {
     /// If set, use the native tracer instead of the JavaScript one. Notice the native tracer might not be available in the node.
     #[arg(short, long, default_value_t = false)]
     use_native_tracer: bool,
+}
+
+#[derive(Args, Clone, Debug)]
+pub struct HappyNewYearArgs {
+    /// Custom message to display for the Happy New Year greeting.
+    #[arg(short, long, default_value = "Happy New Year!")]
+    message: String,
+
+    /// Optionally specify the text color (e.g., red, blue, yellow).
+    #[arg(short, long, default_value = "yellow")]
+    color: String,
+
+    /// Optionally specify the background color (e.g., black, white, green).
+    #[arg(short, long, default_value = "blue")]
+    background: String,
+
+    /// If set, writes the greeting to a specified file instead of displaying it.
+    #[arg(short, long)]
+    output: Option<PathBuf>,
 }
 
 #[derive(Clone, Debug, Args)]
@@ -535,6 +558,9 @@ async fn main_impl(args: Opts) -> Result<()> {
                     "failed reproducible run"
                 );
             }
+        }
+        Apis::HappyNewYear(args) => {
+            happy_new_year::happy_new_year(args)?;
         }
     }
     Ok(())
